@@ -21,7 +21,7 @@
 
         function loadData() {
             const filename = getParameterByName('file'); // Obtener el nombre del archivo de los parámetros de la URL
-            const url = 'https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/' + filename + '.json';
+            const url = 'https://github.com/divpoliticas/divpoliticas.github.io/blob/main/json/' + filename + '.json';
 
             fetch(url)
                 .then(response => {
