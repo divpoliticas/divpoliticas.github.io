@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Visualización de Datos</title>
+    <title>Datos Específicos de JSON</title>
 </head>
 <body>
-    <h1>Información desde JSON</h1>
-    <div id="data"></div>
+    <h1>Información de búsqueda</h1>
+    <div id="data">Los datos JSON se mostrarán aquí en forma de tabla</div>
 
     <script>
         function getParameterByName(name, url = window.location.href) {
@@ -41,19 +41,15 @@
         }
 
         function displayData(data, id) {
-            let found = false;
             let html = '<table border="1"><tr><th>ID</th><th>Título (TI)</th><th>Año (PY)</th></tr>';
+            const filteredData = data.filter(item => item.id_topic.toString() === id);
 
-            for (const entry of Object.entries(data.TI)) {
-                if (entry[0] === id) {
-                    found = true;
-                    const py = data.PY[id];
-                    html += `<tr><td>${id}</td><td>${entry[1]}</td><td>${py}</td></tr>`;
-                }
-            }
+            filteredData.forEach(item => {
+                html += `<tr><td>${item.id_topic}</td><td>${item.TI}</td><td>${item.PY}</td></tr>`;
+            });
 
             html += '</table>';
-            if (!found) {
+            if (filteredData.length === 0) {
                 html = '<p>No se encontraron datos para la ID proporcionada.</p>';
             }
             document.getElementById('data').innerHTML = html;
