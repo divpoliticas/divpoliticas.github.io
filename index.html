@@ -41,7 +41,7 @@
         }
 
         function displayData(data, id) {
-            let html = '<table border="1"><tr><th>ID</th><th>Título (TI)</th><th>Año (PY)</th></tr>';
+            let html = '<table border="1"><tr><th>Título</th><th>Año</th></tr>';
             const filteredData = data.filter(item => item.id_topic.toString() === id);
 
             filteredData.forEach(item => {
