@@ -2,14 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Visualización de JSON</title>
+    <title>Visualización de Datos</title>
 </head>
 <body>
-    <h1>Datos desde Base de datos</h1>
+    <h1>Información desde JSON</h1>
     <div id="data"></div>
 
     <script>
-        // Función para obtener el nombre del archivo desde la URL
         function getParameterByName(name, url = window.location.href) {
             name = name.replace(/[\[\]]/g, '\\$&');
             const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -20,8 +19,9 @@
         }
 
         function loadData() {
-            const filename = getParameterByName('file'); // Obtener el nombre del archivo de los parámetros de la URL
-            const url = 'https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/' + filename + '.json';
+            const filename = getParameterByName('file');
+            const id = getParameterByName('id');
+            const url = `https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/${filename}.json`;
 
             fetch(url)
                 .then(response => {
@@ -32,40 +32,34 @@
                     }
                 })
                 .then(data => {
-                    buildTable(data);
+                    displayData(data, id);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('data').innerHTML = '<p>Error al cargar el archivo JSON. + url</p>';
+                    document.getElementById('data').innerHTML = '<p>Error al cargar el archivo JSON.</p>';
                 });
         }
 
-        function buildTable(data) {
-            var table = '<table border="1" style="width:100%;">';
-            var ids = Object.keys(data['AU']); // Asumiendo que 'AU' es una clave siempre presente en tu JSON
+        function displayData(data, id) {
+            let found = false;
+            let html = '<table border="1"><tr><th>ID</th><th>Título (TI)</th><th>Año (PY)</th></tr>';
 
-            // Crear cabeceras
-            table += '<tr><th>ID</th>';
-            Object.keys(data).forEach(key => {
-                table += '<th>' + key + '</th>';
-            });
-            table += '</tr>';
+            for (const entry of Object.entries(data.TI)) {
+                if (entry[0] === id) {
+                    found = true;
+                    const py = data.PY[id];
+                    html += `<tr><td>${id}</td><td>${entry[1]}</td><td>${py}</td></tr>`;
+                }
+            }
 
-            // Crear filas
-            ids.forEach(id => {
-                table += '<tr>';
-                table += '<td>' + id + '</td>'; // Primera columna es el ID
-                Object.keys(data).forEach(key => {
-                    table += '<td>' + data[key][id] + '</td>'; // Agregar datos de cada clave principal
-                });
-                table += '</tr>';
-            });
-
-            table += '</table>';
-            document.getElementById('data').innerHTML = table;
+            html += '</table>';
+            if (!found) {
+                html = '<p>No se encontraron datos para la ID proporcionada.</p>';
+            }
+            document.getElementById('data').innerHTML = html;
         }
 
-        window.onload = loadData; // Carga los datos cuando la página se carga
+        window.onload = loadData;
     </script>
 </body>
 </html>
