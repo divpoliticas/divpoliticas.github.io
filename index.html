@@ -59,7 +59,10 @@
             const filteredData = data.filter(item => item.id_topic.toString() === id);
 
             filteredData.forEach(item => {
-                html += `<tr><td>${item.id_topic}</td><td>${item.cita_autor}(${item.cita_anio})<b>${item.cita_titulo}$</b>{item.cita_revista}{item.cita_doi}</td></tr>`;
+                    html += `<tr>
+                    <td>${item.id_topic}</td>
+                    <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}${item.cita_doi}</td>
+                     </tr>`;
             });
 
             html += '</table>';
