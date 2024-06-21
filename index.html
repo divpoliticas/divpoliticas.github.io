@@ -2,30 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Información del Investigador</title>
+    <title>Datos de Búsqueda</title>
     <style>
+        /* Establece la fuente Arial para todo el contenido del body */
         body {
-            font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 10pt;
+            /*font-family: Arial, sans-serif; /* Arial con sans-serif como fallback */
+            font-family: Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 10pt; /* Tamaño de fuente de 10 puntos */
             font-weight: 400;
         }
+
+        /* Estilo para enlaces */
         a {
-            color: #1e7896;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            padding: 8px;
-            text-align: left;
+            color: #1e7896; /* Color azul específico para enlaces */
         }
     </style>
 </head>
 <body>
-    <h1>Publicaciones del Investigador</h1>
-    <div id="data">Los datos del investigador se mostrarán aquí en forma de tabla.</div>
+    <h1>Información de búsqueda</h1>
+    <div id="data">Los datos JSON se mostrarán aquí en forma de tabla</div>
 
     <script>
         function getParameterByName(name, url = window.location.href) {
@@ -39,7 +34,7 @@
 
         function loadData() {
             const filename = getParameterByName('file');
-            const name = getParameterByName('name');
+            const id = getParameterByName('id');
             const url = `https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/${filename}.json`;
 
             fetch(url)
@@ -51,7 +46,7 @@
                     }
                 })
                 .then(data => {
-                    displayData(data, name);
+                    displayData(data, id);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -59,20 +54,20 @@
                 });
         }
 
-        function displayData(data, name) {
-            let html = '<table><tr><th>Autor</th><th>Publicación</th></tr>';
-            const filteredData = data.filter(item => item.cita_autor.toLowerCase().includes(name.toLowerCase()));
+        function displayData(data, id) {
+            let html = '<table border="1"><tr><th>ID</th><th>Publicación</th></tr>';
+            const filteredData = data.filter(item => item.id_topic.toString() === id);
 
             filteredData.forEach(item => {
-                html += `<tr>
-                    <td>${item.cita_autor}</td>
-                    <td>${item.cita_anio}. <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || ''}</td>
-                 </tr>`;
+                    html += `<tr>
+                    <td>${item.id_topic}</td>
+                    <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
+                     </tr>`;
             });
 
             html += '</table>';
             if (filteredData.length === 0) {
-                html = '<p>No se encontraron publicaciones para el investigador especificado.</p>';
+                html = '<p>No se encontraron datos para la ID proporcionada.</p>';
             }
             document.getElementById('data').innerHTML = html;
         }
