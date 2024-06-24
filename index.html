@@ -81,13 +81,39 @@
             document.getElementById('data').innerHTML = html;
         }
 
+        // function displayDataByName(data, name) {
+        //     let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
+        //     let publications = new Set();
+
+        //     data.forEach(item => {
+        //         item.investigadores.forEach(investigador => {
+        //             if (investigador.nombre.toLowerCase().includes(name)) {
+        //                 let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
+        //                 publications.add(publicationTitle);
+        //             }
+        //         });
+        //     });
+
+        //     if (publications.size > 0) {
+        //         publications.forEach(publication => {
+        //             html += `<tr><td>${name}</td><td>${publication}</td></tr>`;
+        //         });
+        //     } else {
+        //         html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
+        //     }
+        //     html += '</table>';
+        //     document.getElementById('data').innerHTML = html;
+        // }
+
         function displayDataByName(data, name) {
             let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
             let publications = new Set();
 
+            name = decodeURIComponent(name.replace(/\+/g, ' ')); // Decodifica correctamente el nombre
+
             data.forEach(item => {
                 item.investigadores.forEach(investigador => {
-                    if (investigador.nombre.toLowerCase().includes(name)) {
+                    if (investigador.nombre.toLowerCase().includes(name.toLowerCase().trim())) { // Compara nombres normalizados
                         let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
                         publications.add(publicationTitle);
                     }
