@@ -6,7 +6,6 @@
     <style>
         /* Establece la fuente Arial para todo el contenido del body */
         body {
-            /*font-family: Arial, sans-serif; /* Arial con sans-serif como fallback */
             font-family: Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             font-size: 10pt; /* Tamaño de fuente de 10 puntos */
             font-weight: 400;
@@ -35,6 +34,7 @@
         function loadData() {
             const filename = getParameterByName('file');
             const id = getParameterByName('id');
+            const name = getParameterByName('name') ? getParameterByName('name').toLowerCase() : null;
             const url = `https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/${filename}.json`;
 
             fetch(url)
@@ -46,7 +46,13 @@
                     }
                 })
                 .then(data => {
-                    displayData(data, id);
+                    if (id) {
+                        displayData(data, id);
+                    } else if (name) {
+                        displayDataByName(data, name);
+                    } else {
+                        document.getElementById('data').innerHTML = '<p>No se proporcionó ID o Nombre válido para la búsqueda.</p>';
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -59,15 +65,33 @@
             const filteredData = data.filter(item => item.id_topic.toString() === id);
 
             filteredData.forEach(item => {
-                    html += `<tr>
-                    <td>${item.id_topic}</td>
-                    <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
-                     </tr>`;
+                html += `<tr>
+                <td>${item.id_topic}</td>
+                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
+                </tr>`;
             });
 
             html += '</table>';
             if (filteredData.length === 0) {
                 html = '<p>No se encontraron datos para la ID proporcionada.</p>';
+            }
+            document.getElementById('data').innerHTML = html;
+        }
+
+        function displayDataByName(data, name) {
+            let html = '<table border="1"><tr><th>Nombre</th><th>Publicación</th></tr>';
+            const filteredData = data.filter(item => item.investigadores.some(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name));
+
+            filteredData.forEach(item => {
+                html += `<tr>
+                <td>${item.investigadores.find(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name).nombre}</td>
+                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
+                </tr>`;
+            });
+
+            html += '</table>';
+            if (filteredData.length === 0) {
+                html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
             }
             document.getElementById('data').innerHTML = html;
         }
