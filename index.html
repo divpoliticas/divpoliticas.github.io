@@ -79,20 +79,25 @@
         }
 
         function displayDataByName(data, name) {
-            let html = '<table border="1"><tr><th>Nombre</th><th>Publicación</th></tr>';
-            const filteredData = data.filter(item => item.investigadores.some(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name));
-
-            filteredData.forEach(item => {
-                html += `<tr>
-                <td>${item.investigadores.find(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name).nombre}</td>
-                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
-                </tr>`;
+            let publications = new Set(); // Usamos un conjunto para evitar duplicados
+            data.forEach(item => {
+                item.investigadores.forEach(investigador => {
+                    if (investigador.nombre && investigador.nombre.toLowerCase() === name) {
+                        let publicationTitle = `(${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}`;
+                        publications.add(publicationTitle);
+                    }
+                });
             });
-
-            html += '</table>';
-            if (filteredData.length === 0) {
+        
+            let html = '<table border="1"><tr><th>Nombre</th><th>Publicación</th></tr>';
+            if (publications.size > 0) {
+                publications.forEach(publication => {
+                    html += `<tr><td>${name}</td><td>${publication}</td></tr>`;
+                });
+            } else {
                 html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
             }
+            html += '</table>';
             document.getElementById('data').innerHTML = html;
         }
 
