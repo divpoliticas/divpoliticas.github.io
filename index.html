@@ -83,7 +83,7 @@
             data.forEach(item => {
                 item.investigadores.forEach(investigador => {
                     if (investigador.nombre && investigador.nombre.toLowerCase() === name) {
-                        let publicationTitle = `${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}`;
+                        let publicationTitle = `(${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}`;
                         publications.add(publicationTitle);
                     }
                 });
