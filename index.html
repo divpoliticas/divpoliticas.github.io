@@ -65,8 +65,9 @@
 
         function displayDataById(data, id) {
             let html = '<table><tr><th>ID</th><th>Publicación</th></tr>';
-            const filteredData = data.filter(item => item.topics.includes(parseInt(id)));
-
+            // const filteredData = data.filter(item => item.topics.includes(parseInt(id)));
+            const filteredData = data.filter(item => item.topics && item.topics.includes(parseInt(id)));
+            
             filteredData.forEach(item => {
                 html += `<tr>
                 <td>${id}</td>
