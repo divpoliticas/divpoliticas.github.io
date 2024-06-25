@@ -4,22 +4,31 @@
     <meta charset="UTF-8">
     <title>UdE - Buscador</title>
     <style>
-        /* Establece la fuente Arial para todo el contenido del body */
         body {
-            font-family: Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            font-size: 10pt; /* Tamaño de fuente de 10 puntos */
+            font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 10pt;
             font-weight: 400;
         }
-
-        /* Estilo para enlaces */
         a {
-            color: #1e7896; /* Color azul específico para enlaces */
+            color: #1e7896;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
     <h1>Datos de la búsqueda</h1>
-    <div id="data">Los datos JSON se mostrarán aquí en forma de tabla</div>
+    <div id="data">Cargando datos...</div>
 
     <script>
         function getParameterByName(name, url = window.location.href) {
@@ -38,16 +47,10 @@
             const url = `https://raw.githubusercontent.com/divpoliticas/divpoliticas.github.io/main/json/${filename}.json`;
 
             fetch(url)
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('No se pudo cargar el archivo JSON: ' + url);
-                    }
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (id) {
-                        displayData(data, id);
+                        displayDataById(data, id);
                     } else if (name) {
                         displayDataByName(data, name);
                     } else {
@@ -60,14 +63,14 @@
                 });
         }
 
-        function displayData(data, id) {
-            let html = '<table border="1"><tr><th>ID</th><th>Publicación</th></tr>';
-            const filteredData = data.filter(item => item.id_topic.toString() === id);
+        function displayDataById(data, id) {
+            let html = '<table><tr><th>ID</th><th>Publicación</th></tr>';
+            const filteredData = data.filter(item => item.topics.includes(parseInt(id)));
 
             filteredData.forEach(item => {
                 html += `<tr>
-                <td>${item.id_topic}</td>
-                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
+                <td>${id}</td>
+                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}</td>
                 </tr>`;
             });
 
@@ -78,21 +81,60 @@
             document.getElementById('data').innerHTML = html;
         }
 
+        // function displayDataByName(data, name) {
+        //     let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
+        //     let publications = new Set();
+
+        //     data.forEach(item => {
+        //         item.investigadores.forEach(investigador => {
+        //             if (investigador.nombre.toLowerCase().includes(name)) {
+        //                 let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
+        //                 publications.add(publicationTitle);
+        //             }
+        //         });
+        //     });
+
+        //     if (publications.size > 0) {
+        //         publications.forEach(publication => {
+        //             html += `<tr><td>${name}</td><td>${publication}</td></tr>`;
+        //         });
+        //     } else {
+        //         html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
+        //     }
+        //     html += '</table>';
+        //     document.getElementById('data').innerHTML = html;
+        // }
+
         function displayDataByName(data, name) {
-            let html = '<table border="1"><tr><th>Nombre</th><th>Publicación</th></tr>';
-            const filteredData = data.filter(item => item.investigadores.some(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name));
+            let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
+            let publications = new Set();
 
-            filteredData.forEach(item => {
-                html += `<tr>
-                <td>${item.investigadores.find(investigador => investigador.nombre && investigador.nombre.toLowerCase() === name).nombre}</td>
-                <td>${item.cita_autor}. (${item.cita_anio}). <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi}</td>
-                </tr>`;
-            });
+            name = decodeURIComponent(name.replace(/\+/g, ' ')); // Decodifica correctamente el nombre
 
-            html += '</table>';
-            if (filteredData.length === 0) {
+            // Verifica que 'data' y 'name' no sean nulos
+            if (data && name) {
+                data.forEach(item => {
+                    // Verifica que cada ítem tenga la propiedad 'investigadores'
+                    if (item.investigadores) {
+                        item.investigadores.forEach(investigador => {
+                            // Asegura que 'investigador.nombre' existe y compara nombres normalizados
+                            if (investigador.nombre && investigador.nombre.toLowerCase().includes(name.toLowerCase().trim())) {
+                                let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
+                                publications.add(publicationTitle);
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (publications.size > 0) {
+                publications.forEach(publication => {
+                    html += `<tr><td>${name}</td><td>${publication}</td></tr>`;
+                });
+            } else {
                 html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
             }
+            html += '</table>';
             document.getElementById('data').innerHTML = html;
         }
 
