@@ -25,11 +25,20 @@
         th {
             background-color: #f2f2f2;
         }
+        .search-container {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Data dentro del Tópico</h1>
     <p>by: <a href='https://www.minciencia.gob.cl/' target='_blank'>Div. Políticas Públicas Min. Ciencia</a> - <a href='https://anid.cl/' target='_blank'>REC ANID</a></p>
+
+    <div class="search-container">
+        <label for="searchInput">Buscar en la tabla: </label>
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Buscar...">
+    </div>
+
     <div id="data">Cargando datos...</div>
 
     <script>
@@ -66,8 +75,7 @@
         }
 
         function displayDataById(data, id) {
-            let html = '<table><tr><th>ID</th><th>Publicación</th></tr>';
-            // const filteredData = data.filter(item => item.topics.includes(parseInt(id)));
+            let html = '<table id="dataTable"><tr><th>ID</th><th>Publicación</th></tr>';
             const filteredData = data.filter(item => item.topics && item.topics.includes(parseInt(id)));
             
             filteredData.forEach(item => {
@@ -84,43 +92,16 @@
             document.getElementById('data').innerHTML = html;
         }
 
-        // function displayDataByName(data, name) {
-        //     let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
-        //     let publications = new Set();
-
-        //     data.forEach(item => {
-        //         item.investigadores.forEach(investigador => {
-        //             if (investigador.nombre.toLowerCase().includes(name)) {
-        //                 let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
-        //                 publications.add(publicationTitle);
-        //             }
-        //         });
-        //     });
-
-        //     if (publications.size > 0) {
-        //         publications.forEach(publication => {
-        //             html += `<tr><td>${name}</td><td>${publication}</td></tr>`;
-        //         });
-        //     } else {
-        //         html = '<p>No se encontraron datos para el nombre proporcionado.</p>';
-        //     }
-        //     html += '</table>';
-        //     document.getElementById('data').innerHTML = html;
-        // }
-
         function displayDataByName(data, name) {
-            let html = '<table><tr><th>Nombre</th><th>Publicación</th></tr>';
+            let html = '<table id="dataTable"><tr><th>Nombre</th><th>Publicación</th></tr>';
             let publications = new Set();
 
             name = decodeURIComponent(name.replace(/\+/g, ' ')); // Decodifica correctamente el nombre
 
-            // Verifica que 'data' y 'name' no sean nulos
             if (data && name) {
                 data.forEach(item => {
-                    // Verifica que cada ítem tenga la propiedad 'investigadores'
                     if (item.investigadores) {
                         item.investigadores.forEach(investigador => {
-                            // Asegura que 'investigador.nombre' existe y compara nombres normalizados
                             if (investigador.nombre && investigador.nombre.toLowerCase().includes(name.toLowerCase().trim())) {
                                 let publicationTitle = `${investigador.nombre}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
                                 publications.add(publicationTitle);
@@ -139,6 +120,25 @@
             }
             html += '</table>';
             document.getElementById('data').innerHTML = html;
+        }
+
+        function filterTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('dataTable');
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < trs.length; i++) {
+                const tds = trs[i].getElementsByTagName('td');
+                let display = false;
+                for (let j = 0; j < tds.length; j++) {
+                    if (tds[j].innerText.toLowerCase().includes(filter)) {
+                        display = true;
+                        break;
+                    }
+                }
+                trs[i].style.display = display ? '' : 'none';
+            }
         }
 
         window.onload = loadData;
