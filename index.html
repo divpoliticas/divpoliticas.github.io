@@ -37,10 +37,10 @@
     <div class="search-container">
         <label for="searchInput">Buscar en la tabla: </label>
         <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Buscar...">
+        <div id="rowCounter">Documentos encontrados: 0</div>
     </div>
 
     <div id="data">Cargando datos...</div>
-    <div id="rowCounter">Documentos encontrados: 0</div>
 
     <script>
         function getParameterByName(name, url = window.location.href) {
