@@ -96,13 +96,13 @@
             let html = '<table id="dataTable"><tr><th>Nombre</th><th>Publicación</th></tr>';
             let publications = new Set();
 
-            name = decodeURIComponent(name.replace(/\+/g, ' ')); // Decodifica correctamente el nombre
+            name = name.toLowerCase().trim(); // Normaliza el nombre
 
             if (data && name) {
                 data.forEach(item => {
                     if (item.investigadores) {
                         item.investigadores.forEach(investigador => {
-                            if (investigador.nombre && investigador.nombre.toLowerCase().includes(name.toLowerCase().trim())) {
+                            if (investigador.toLowerCase().includes(name)) {
                                 let publicationTitle = `${item.cita_autor}: (${item.cita_anio}) <b>${item.cita_titulo}</b>. ${item.cita_revista}. ${item.cita_doi || 'N/A'}`;
                                 publications.add(publicationTitle);
                             }
