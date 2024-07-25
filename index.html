@@ -40,6 +40,7 @@
     </div>
 
     <div id="data">Cargando datos...</div>
+    <div id="rowCounter">Documentos encontrados: 0</div>
 
     <script>
         function getParameterByName(name, url = window.location.href) {
@@ -90,6 +91,7 @@
                 html = '<p>No se encontraron datos para la ID proporcionada.</p>';
             }
             document.getElementById('data').innerHTML = html;
+            updateRowCount();
         }
 
         function displayDataByName(data, name) {
@@ -120,6 +122,7 @@
             }
             html += '</table>';
             document.getElementById('data').innerHTML = html;
+            updateRowCount();
         }
 
         function filterTable() {
@@ -127,6 +130,8 @@
             const filter = input.value.toLowerCase();
             const table = document.getElementById('dataTable');
             const trs = table.getElementsByTagName('tr');
+
+            let rowCount = 0;
 
             for (let i = 1; i < trs.length; i++) {
                 const tds = trs[i].getElementsByTagName('td');
@@ -138,7 +143,21 @@
                     }
                 }
                 trs[i].style.display = display ? '' : 'none';
+                if (display) rowCount++;
             }
+            document.getElementById('rowCounter').innerText = `Filas mostradas: ${rowCount}`;
+        }
+        
+        function updateRowCount() {
+            const table = document.getElementById('dataTable');
+            const trs = table.getElementsByTagName('tr');
+            let rowCount = 0;
+            for (let i = 1; i < trs.length; i++) {
+                if (trs[i].style.display !== 'none') {
+                    rowCount++;
+                }
+            }
+            document.getElementById('rowCounter').innerText = `Filas mostradas: ${rowCount}`;
         }
 
         window.onload = loadData;
